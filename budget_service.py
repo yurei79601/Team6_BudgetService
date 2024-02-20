@@ -3,10 +3,12 @@ from dataclasses import dataclass
 from calendar import monthrange
 from datetime import datetime
 
+
 @dataclass
 class Budget:
     year_month: datetime
     amount: int
+
 
 class BudgetService:
     def get_all(self, start, end) -> List[Budget]:
@@ -22,7 +24,10 @@ class BudgetService:
             budget_month = budget.year_month.month
             days_in_month = monthrange(budget_year, budget_month)[1]
 
-            if start.year <= budget_year <= end.year and start.month <= budget_month <= end.month:
+            if (
+                start.year <= budget_year <= end.year
+                and start.month <= budget_month <= end.month
+            ):
                 if budget_year == start.year and budget_month == start.month:
                     if start.month == end.month and start.year == end.year:
                         days_count = end.day - start.day + 1
