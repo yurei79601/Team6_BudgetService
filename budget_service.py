@@ -44,6 +44,7 @@ class OneMonthBudget:
         self.year = year
         self.month = month
         self.year_month = date(year, month, 1)
+        self.year_month_string = f"{year}{str(month).zfill(2)}"
         self.amount = amount
 
 
@@ -63,7 +64,7 @@ class Budget:
             for budget_statement in budget_statement_list
         ]
 
-    def _create_period(self, budget_statement_list: list) -> List[date]:
+    def _create_period(self, budget_statement_list: list) -> Period:
         first_budget_statment = budget_statement_list[0][0]
         last_budget_statment = budget_statement_list[-1][0]
         return Period(
@@ -96,13 +97,10 @@ class BudgetService:
             Period(start=start, end=end), self.budget.period
         )
         days_months_dict = intersection_period.get_days_for_months()
-        total_budget = 0
-        for dt, days in days_months_dict.items():
-            one_month_budget = [
-                budget
+        return sum(
+            [
+                days_months_dict.get(budget.year_month_string, 0)
+                * self._get_one_day_amount(budget)
                 for budget in self.budget.budgets
-                if budget.year_month == date(int(dt[:4]), int(dt[4:]), 1)
-            ][0]
-
-            total_budget += days * self._get_one_day_amount(one_month_budget)
-        return total_budget
+            ]
+        )
